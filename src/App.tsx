@@ -1,26 +1,165 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useState } from "react";
+import classnames from "classnames";
+import { useBitcoinCalculator, CalculatePayload } from "./hooks";
+import {
+  Toggle,
+  Heading,
+  NumberPicker,
+  Button,
+  Card,
+  LabeledValue,
+} from "./components";
 
-function App() {
+export type AppProps = { options?: string[] };
+
+const App: React.FC<AppProps> = ({ options = ["USD", "BTC"] }) => {
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+  const { Calculate, data, error, loading } = useBitcoinCalculator();
+
+  const [formValues, setFormValues] = useState<Partial<CalculatePayload>>({});
+  const [errorMessages, setErrorMessages] =
+    useState<{ [key in keyof CalculatePayload]?: string | undefined }>();
+
+  const submitForm = useCallback(() => {
+    if (
+      !formValues ||
+      !formValues?.electricity_cost ||
+      !formValues?.hash_rate ||
+      !formValues?.initial_investment ||
+      !formValues?.power_consumption
+    ) {
+      setErrorMessages({
+        electricity_cost: !formValues?.electricity_cost ? "bad" : undefined,
+        hash_rate: !formValues?.hash_rate ? "bad" : undefined,
+        initial_investment: !formValues?.initial_investment ? "bad" : undefined,
+        power_consumption: !formValues?.power_consumption ? "bad" : undefined,
+      });
+    } else {
+      Calculate({
+        electricity_cost: formValues.electricity_cost,
+        hash_rate: formValues.hash_rate,
+        initial_investment: formValues.initial_investment,
+        power_consumption: formValues?.power_consumption,
+      });
+    }
+  }, [Calculate, formValues]);
+
+  const updateFormValue = useCallback((form: Partial<CalculatePayload>) => {
+    setFormValues((v) => ({ ...v, ...form }));
+    setErrorMessages((e) => ({
+      ...e,
+      ...Object.fromEntries(
+        Object.entries(form).map(([key]) => [key, undefined])
+      ),
+    }));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <main
+      className={classnames(
+        "bg-neutral-100",
+        "flex",
+        "flex-col",
+        "w-full",
+        "h-full",
+        "min-w-0",
+        "overflow-y-auto",
+        "space-y-4",
+        "p-24"
+      )}
+    >
+      <header>
+        <Heading variant="h1">Bit Coin Calculator</Heading>
       </header>
-    </div>
+      <Card>
+        <div className={classnames("flex", "flex-col", "min-w-0", "space-y-2")}>
+          <NumberPicker
+            label="Hash rate"
+            value={formValues.hash_rate}
+            onChange={(h) => updateFormValue({ hash_rate: h })}
+            errorMessage={errorMessages?.hash_rate}
+          />
+          <NumberPicker
+            label="Power consumption"
+            value={formValues.power_consumption}
+            onChange={(p) => updateFormValue({ power_consumption: p })}
+            errorMessage={errorMessages?.power_consumption}
+          />
+          <NumberPicker
+            label="Electricity cost"
+            value={formValues.electricity_cost}
+            onChange={(e) => updateFormValue({ electricity_cost: e })}
+            errorMessage={errorMessages?.electricity_cost}
+          />
+          <NumberPicker
+            label="Initial investment"
+            value={formValues.initial_investment}
+            onChange={(i) => updateFormValue({ initial_investment: i })}
+            errorMessage={errorMessages?.initial_investment}
+          />
+          <Button label="Calculate" onClick={submitForm} />
+        </div>
+      </Card>
+      <Card>
+        {loading ? (
+          <div>loading...</div>
+        ) : error ? (
+          <div>unable to calculate</div>
+        ) : data === undefined ? (
+          <div>enter data above</div>
+        ) : (
+          <div
+            className={classnames("flex", "flex-col", "min-w-0", "space-y-2")}
+          >
+            <LabeledValue label="Daily cost" value={data?.dailyCost} />
+            <LabeledValue label="Monthly cost" value={data?.monthlyCost} />
+            <LabeledValue label="Yearly cost" value={data?.yearlyCost} />
+            <LabeledValue
+              label="Daily revenue (USD)"
+              value={data?.dailyProfitUSD}
+            />
+            <LabeledValue
+              label="Monthly revenue (USD)"
+              value={data?.monthlyRevenueUSD}
+            />
+            <LabeledValue
+              label="Yearly revenue (USD)"
+              value={data?.yearlyProfitUSD}
+            />
+            <LabeledValue
+              label="Daily revenue (BTC)"
+              value={data?.dailyRevenueBTC}
+            />
+            <LabeledValue
+              label="Monthly revenue (BTC)"
+              value={data?.monthlyRevenueBTC}
+            />
+            <LabeledValue
+              label="Yearly revenue (BTC)"
+              value={data?.yearlyRevenueBTC}
+            />
+            <LabeledValue
+              label="Daily profit (USD)"
+              value={data?.dailyProfitUSD}
+            />
+            <LabeledValue
+              label="Monthly profit (USD)"
+              value={data?.monthlyProfitUSD}
+            />
+            <LabeledValue
+              label="Yearly profit (USD)"
+              value={data?.yearlyProfitUSD}
+            />
+            <LabeledValue
+              label="Breakeven Timeline"
+              value={data?.breakevenTimeline}
+            />
+            <LabeledValue label="Cost to mine" value={data?.costToMine} />
+          </div>
+        )}
+      </Card>
+    </main>
   );
-}
+};
 
 export default App;
