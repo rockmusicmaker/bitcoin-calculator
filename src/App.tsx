@@ -163,20 +163,35 @@ const App: React.FC<AppProps> = ({
             <div
               className={classnames("flex", "flex-col", "min-w-0", "space-y-2")}
             >
-              <LabeledValue label="Daily cost" value={data?.dailyCost} />
-              <LabeledValue label="Monthly cost" value={data?.monthlyCost} />
-              <LabeledValue label="Yearly cost" value={data?.yearlyCost} />
+              <LabeledValue
+                label="Daily cost"
+                value={data?.dailyCost}
+                type="currency"
+              />
+              <LabeledValue
+                label="Monthly cost"
+                value={data?.monthlyCost}
+                type="currency"
+              />
+              <LabeledValue
+                label="Yearly cost"
+                value={data?.yearlyCost}
+                type="currency"
+              />
               <LabeledValue
                 label="Daily revenue (USD)"
                 value={data?.dailyProfitUSD}
+                type="currency"
               />
               <LabeledValue
                 label="Monthly revenue (USD)"
                 value={data?.monthlyRevenueUSD}
+                type="currency"
               />
               <LabeledValue
                 label="Yearly revenue (USD)"
                 value={data?.yearlyProfitUSD}
+                type="currency"
               />
               <LabeledValue
                 label="Daily revenue (BTC)"
@@ -193,20 +208,27 @@ const App: React.FC<AppProps> = ({
               <LabeledValue
                 label="Daily profit (USD)"
                 value={data?.dailyProfitUSD}
+                type="currency"
               />
               <LabeledValue
                 label="Monthly profit (USD)"
                 value={data?.monthlyProfitUSD}
+                type="currency"
               />
               <LabeledValue
                 label="Yearly profit (USD)"
                 value={data?.yearlyProfitUSD}
+                type="currency"
               />
               <LabeledValue
                 label="Breakeven Timeline"
                 value={data?.breakevenTimeline}
               />
-              <LabeledValue label="Cost to mine" value={data?.costToMine} />
+              <LabeledValue
+                label="Cost to mine"
+                value={data?.costToMine}
+                type="currency"
+              />
             </div>
           )}
         </Card>
