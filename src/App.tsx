@@ -89,7 +89,7 @@ const App: React.FC<AppProps> = ({
       )}
     >
       <header>
-        <Heading variant="h1">Bit Coin Calculator</Heading>
+        <Heading variant="h1">Bitcoin Calculator</Heading>
       </header>
       <div
         className={classnames(
