@@ -1,11 +1,21 @@
 import React from "react";
 import classnames from "classnames";
 
-export type ButtonProps = { label: string; onClick: () => void };
+export type ButtonProps = {
+  label: string;
+} & (
+  | { onClick: () => void; type?: "button" | undefined }
+  | { onClick?: undefined; type: "submit" | "reset" }
+);
 
-export const Button: React.FC<ButtonProps> = ({ label, onClick }) => {
+export const Button: React.FC<ButtonProps> = ({
+  label,
+  onClick,
+  type = "button",
+}) => {
   return (
     <button
+      type={type}
       onClick={onClick}
       className={classnames(
         "flex",

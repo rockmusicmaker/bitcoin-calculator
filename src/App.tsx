@@ -9,10 +9,22 @@ import {
   Card,
   LabeledValue,
 } from "./components";
+import { FormatNumber } from "utils";
 
-export type AppProps = { options?: string[] };
+export type AppProps = {
+  options?: string[];
+  maxInputValues?: { [key in keyof CalculatePayload]: number };
+};
 
-const App: React.FC<AppProps> = ({ options = ["USD", "BTC"] }) => {
+const App: React.FC<AppProps> = ({
+  options = ["USD", "BTC"],
+  maxInputValues = {
+    electricity_cost: 200000,
+    hash_rate: 100,
+    initial_investment: 100000,
+    power_consumption: 100000,
+  },
+}) => {
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const { Calculate, data, error, loading } = useBitcoinCalculator();
 
@@ -71,93 +83,126 @@ const App: React.FC<AppProps> = ({ options = ["USD", "BTC"] }) => {
       <header>
         <Heading variant="h1">Bit Coin Calculator</Heading>
       </header>
-      <Card>
-        <div className={classnames("flex", "flex-col", "min-w-0", "space-y-2")}>
-          <NumberPicker
-            label="Hash rate"
-            value={formValues.hash_rate}
-            onChange={(h) => updateFormValue({ hash_rate: h })}
-            errorMessage={errorMessages?.hash_rate}
-          />
-          <NumberPicker
-            label="Power consumption"
-            value={formValues.power_consumption}
-            onChange={(p) => updateFormValue({ power_consumption: p })}
-            errorMessage={errorMessages?.power_consumption}
-          />
-          <NumberPicker
-            label="Electricity cost"
-            value={formValues.electricity_cost}
-            onChange={(e) => updateFormValue({ electricity_cost: e })}
-            errorMessage={errorMessages?.electricity_cost}
-          />
-          <NumberPicker
-            label="Initial investment"
-            value={formValues.initial_investment}
-            onChange={(i) => updateFormValue({ initial_investment: i })}
-            errorMessage={errorMessages?.initial_investment}
-          />
-          <Button label="Calculate" onClick={submitForm} />
-        </div>
-      </Card>
-      <Card>
-        {loading ? (
-          <div>loading...</div>
-        ) : error ? (
-          <div>unable to calculate</div>
-        ) : data === undefined ? (
-          <div>enter data above</div>
-        ) : (
-          <div
+      <div
+        className={classnames(
+          "w-full",
+          "flex",
+          "lg:flex-row",
+          "flex-col",
+          "lg:space-x-4",
+          "lg:space-y-0",
+          "space-y-4",
+          "space-x-0"
+        )}
+      >
+        <Card>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitForm();
+            }}
             className={classnames("flex", "flex-col", "min-w-0", "space-y-2")}
           >
-            <LabeledValue label="Daily cost" value={data?.dailyCost} />
-            <LabeledValue label="Monthly cost" value={data?.monthlyCost} />
-            <LabeledValue label="Yearly cost" value={data?.yearlyCost} />
-            <LabeledValue
-              label="Daily revenue (USD)"
-              value={data?.dailyProfitUSD}
+            <NumberPicker
+              label="Hash rate"
+              value={formValues.hash_rate}
+              onChange={(h) => updateFormValue({ hash_rate: h })}
+              errorMessage={errorMessages?.hash_rate}
+              min={0}
+              max={maxInputValues.hash_rate}
+              step={1}
             />
-            <LabeledValue
-              label="Monthly revenue (USD)"
-              value={data?.monthlyRevenueUSD}
+            <NumberPicker
+              label="Power consumption"
+              value={formValues.power_consumption}
+              onChange={(p) => updateFormValue({ power_consumption: p })}
+              errorMessage={errorMessages?.power_consumption}
+              min={0}
+              max={maxInputValues.power_consumption}
+              step={1}
             />
-            <LabeledValue
-              label="Yearly revenue (USD)"
-              value={data?.yearlyProfitUSD}
+            <NumberPicker
+              label="Electricity cost"
+              value={formValues.electricity_cost}
+              onChange={(e) => updateFormValue({ electricity_cost: e })}
+              errorMessage={errorMessages?.electricity_cost}
+              min={0}
+              max={maxInputValues.electricity_cost}
+              step={0.01}
+              type="currency"
             />
-            <LabeledValue
-              label="Daily revenue (BTC)"
-              value={data?.dailyRevenueBTC}
+            <NumberPicker
+              label="Initial investment"
+              value={formValues.initial_investment}
+              onChange={(i) => updateFormValue({ initial_investment: i })}
+              errorMessage={errorMessages?.initial_investment}
+              min={0}
+              max={maxInputValues.initial_investment}
+              step={1}
+              type="currency"
             />
-            <LabeledValue
-              label="Monthly revenue (BTC)"
-              value={data?.monthlyRevenueBTC}
-            />
-            <LabeledValue
-              label="Yearly revenue (BTC)"
-              value={data?.yearlyRevenueBTC}
-            />
-            <LabeledValue
-              label="Daily profit (USD)"
-              value={data?.dailyProfitUSD}
-            />
-            <LabeledValue
-              label="Monthly profit (USD)"
-              value={data?.monthlyProfitUSD}
-            />
-            <LabeledValue
-              label="Yearly profit (USD)"
-              value={data?.yearlyProfitUSD}
-            />
-            <LabeledValue
-              label="Breakeven Timeline"
-              value={data?.breakevenTimeline}
-            />
-            <LabeledValue label="Cost to mine" value={data?.costToMine} />
-          </div>
-        )}
-      </Card>
+            <Button label="Calculate" type="submit" />
+          </form>
+        </Card>
+        <Card>
+          {loading ? (
+            <div>loading...</div>
+          ) : error ? (
+            <div>unable to calculate</div>
+          ) : data === undefined ? (
+            <div>enter data above</div>
+          ) : (
+            <div
+              className={classnames("flex", "flex-col", "min-w-0", "space-y-2")}
+            >
+              <LabeledValue label="Daily cost" value={data?.dailyCost} />
+              <LabeledValue label="Monthly cost" value={data?.monthlyCost} />
+              <LabeledValue label="Yearly cost" value={data?.yearlyCost} />
+              <LabeledValue
+                label="Daily revenue (USD)"
+                value={data?.dailyProfitUSD}
+              />
+              <LabeledValue
+                label="Monthly revenue (USD)"
+                value={data?.monthlyRevenueUSD}
+              />
+              <LabeledValue
+                label="Yearly revenue (USD)"
+                value={data?.yearlyProfitUSD}
+              />
+              <LabeledValue
+                label="Daily revenue (BTC)"
+                value={data?.dailyRevenueBTC}
+              />
+              <LabeledValue
+                label="Monthly revenue (BTC)"
+                value={data?.monthlyRevenueBTC}
+              />
+              <LabeledValue
+                label="Yearly revenue (BTC)"
+                value={data?.yearlyRevenueBTC}
+              />
+              <LabeledValue
+                label="Daily profit (USD)"
+                value={data?.dailyProfitUSD}
+              />
+              <LabeledValue
+                label="Monthly profit (USD)"
+                value={data?.monthlyProfitUSD}
+              />
+              <LabeledValue
+                label="Yearly profit (USD)"
+                value={data?.yearlyProfitUSD}
+              />
+              <LabeledValue
+                label="Breakeven Timeline"
+                value={data?.breakevenTimeline}
+              />
+              <LabeledValue label="Cost to mine" value={data?.costToMine} />
+            </div>
+          )}
+        </Card>
+      </div>
     </main>
   );
 };
