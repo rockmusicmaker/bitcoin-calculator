@@ -19,8 +19,10 @@ export const LabeledValue: React.FC<LabeledValueProps> = ({
         "whitespace-nowrap"
       )}
     >
-      <div className={classnames("flex", "truncate")}>{label}</div>
-      <div className={classnames("flex", "min-w-fit")}>{value}</div>
+      <div className={classnames("flex", "truncate", "text-sm")}>{label}</div>
+      <div className={classnames("flex", "min-w-fit", "font-semibold")}>
+        {value}
+      </div>
     </div>
   );
 };

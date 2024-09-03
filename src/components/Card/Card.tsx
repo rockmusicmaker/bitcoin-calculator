@@ -13,7 +13,9 @@ export const Card: React.FC<CardProps> = ({ children }) => {
         "rounded-lg",
         "shadow-md",
         "py-4",
-        "px-8"
+        "px-8",
+        "overflow-y-auto",
+        "h-fit"
       )}
     >
       {children}
