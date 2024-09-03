@@ -41,10 +41,18 @@ const App: React.FC<AppProps> = ({
       !formValues?.power_consumption
     ) {
       setErrorMessages({
-        electricity_cost: !formValues?.electricity_cost ? "bad" : undefined,
-        hash_rate: !formValues?.hash_rate ? "bad" : undefined,
-        initial_investment: !formValues?.initial_investment ? "bad" : undefined,
-        power_consumption: !formValues?.power_consumption ? "bad" : undefined,
+        electricity_cost: !formValues?.electricity_cost
+          ? "Please enter an electricity cost"
+          : undefined,
+        hash_rate: !formValues?.hash_rate
+          ? "Please enter a hash rate"
+          : undefined,
+        initial_investment: !formValues?.initial_investment
+          ? "Please enter an initial investment"
+          : undefined,
+        power_consumption: !formValues?.power_consumption
+          ? "Please enter a power consumption"
+          : undefined,
       });
     } else {
       Calculate({

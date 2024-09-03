@@ -73,6 +73,7 @@ export const NumberPicker: React.FC<NumberPickerProps> = ({
               onChange={(e) => onChange(Number(e.target.value))}
               min={min}
               max={max}
+              step="any"
               className={classnames("w-32", "font-semibold", "text-right")}
             />
           </div>
